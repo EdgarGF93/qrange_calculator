@@ -83,6 +83,8 @@ class QCalcWidgetLayOut(QWidget):
 class QCalcWidget(QCalcWidgetLayOut):
     def __init__(self) -> None:
         super().__init__()
+        self.update_parameters()
+        self.start_callbacks()
     
     def update_parameters(self):
         self.distance = self.spinbox_distance.getValue()
@@ -92,6 +94,15 @@ class QCalcWidget(QCalcWidgetLayOut):
         self.bs_radius = self.bs_radius.getValue()
         self.bs_radius = float(self.bs_radius)
         self.detector = self.combobox_detector.currentText()
+
+    def start_callback(self):
+        self.spinbox_distance.valueChanged.connect(
+            lambda:
+            (
+                self.update_parameters(),
+                self.update_results(),
+            )
+        )
 
 
     def tth_to_q(self, tth, energy):
@@ -120,6 +131,14 @@ class QCalcWidget(QCalcWidgetLayOut):
 
     def get_max_d(self):
         pass
+
+    def update_results(self):
+        min_2theta
+        print('The minimum 2theta is %f rads (%f degrees)' % (min_2theta, (min_2theta*180/np.pi)))
+        print('The minimum q is %f nm-1 (%f A-1)' % (q_min, q_min/10))
+        print('The maximum d is %f nanometers\n' % d_max)
+
+
 
 
 class QCalcWindow(QMainWindow):
