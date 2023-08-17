@@ -1,11 +1,21 @@
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QSpinBox, QLabel, QDoubleSpinBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QSpinBox, QLabel, QDoubleSpinBox, QComboBox
+import numpy as np
 import sys
 
 LABEL_ENERGY = "Energy (keV)"
 LABEL_WAVELENGTH = "Wavelength (nm)"
 LABEL_DISTANCE = "Distance (mm)"
 LABEL_RADIUS_BS = "Beamstop radius (mm)"
+LABEL_DETECTOR = "Detector"
+RESULTS_DEFAULT = "HOLA"
+
+DICT_DETECTOR_SIZE = {
+    "MarCCD" : np.array([2048, 2048]),
+    "Pilatus1M" : np.array([981, 1043]),
+    "Pilatus300k" : np.array([487, 619])
+}
+
 
 ENERGY_DEFAULT = 12.4
 ENERGY_STEP = 0.1
@@ -50,6 +60,10 @@ class QCalcWidgetLayOut(QWidget):
         self.spinbox_radius.setRange(BEAMSTOP_RADIUS_RANGE[0], BEAMSTOP_RADIUS_RANGE[1])
         self.spinbox_radius.setSingleStep(BEAMSTOP_RADIUS_STEP)
         self.spinbox_radius.setValue(BEAMSTOP_RADIUS_DEFAULT)
+        self.label_detector = QLabel(LABEL_DETECTOR)
+        self.combobox_detector =QComboBox()
+        for detector in DICT_DETECTOR_SIZE.keys():
+            self.combobox_detector.addItem(detector)
 
         self.input_grid.addWidget(self.label_energy, 1, 1)
         self.input_grid.addWidget(self.spinbox_energy, 1, 2)
@@ -59,11 +73,53 @@ class QCalcWidgetLayOut(QWidget):
         self.input_grid.addWidget(self.spinbox_distance, 3, 2)
         self.input_grid.addWidget(self.label_radius, 4, 1)
         self.input_grid.addWidget(self.spinbox_radius, 4, 2)
+        self.input_grid.addWidget(self.label_detector, 5, 1)
+        self.input_grid.addWidget(self.combobox_detector, 5, 2)
+
+        self.label_results = QLabel(RESULTS_DEFAULT)
+        self.result_grid.addWidget(self.label_results)
 
 
 class QCalcWidget(QCalcWidgetLayOut):
     def __init__(self) -> None:
         super().__init__()
+    
+    def update_parameters(self):
+        self.distance = self.spinbox_distance.getValue()
+        self.distance = float(self.distance)
+        self.energy = self.spinbox_energy.getValue()
+        self.energy = float(self.energy)
+        self.bs_radius = self.bs_radius.getValue()
+        self.bs_radius = float(self.bs_radius)
+        self.detector = self.combobox_detector.currentText()
+
+
+    def tth_to_q(self, tth, energy):
+        wavelength = 1.2398 / energy
+        q = 4 * np.pi / wavelength * np.sin(tth / 2)
+        return q
+
+    def q_to_tth(self, q, energy):
+        wavelength = 1.2398 / energy
+        tth = 2 * np.arcsin(wavelength * q / (4 * np.pi))
+        return tth
+
+    def get_min_2theta(self, beamstop_radius, distance):
+        min_2theta = np.arctan(beamstop_radius / distance)
+        return min_2theta
+    
+    def get_min_q(self, beamstop_radius, distance, energy):
+        min_2theta = self.get_min_2theta(
+            beamstop_radius=beamstop_radius,
+            distance=distance,
+        )
+        q_min = self.tth_to_q(
+            tth=min_2theta,
+            energy=energy,
+        )
+
+    def get_max_d(self):
+        pass
 
 
 class QCalcWindow(QMainWindow):
