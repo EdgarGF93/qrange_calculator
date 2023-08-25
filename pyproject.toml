@@ -1,7 +1,14 @@
+[project]
+name = "qrange_calculator"
+version = "0.1"
+authors = [
+    {name = "Edgar", email = "edgar.gutierrez-fernandez@esrf.fr"},
+]
 
-
-
-
+dependencies = [
+    "numpy",
+    "PyQt5",
+]
 
 
 [project.scripts]
