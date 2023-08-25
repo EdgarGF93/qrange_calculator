@@ -10,7 +10,6 @@ LABEL_WAVELENGTH = "Wavelength (nm)"
 LABEL_DISTANCE = "Distance (mm)"
 LABEL_RADIUS_BS = "Beamstop radius (mm)"
 LABEL_DETECTOR = "Detector"
-RESULTS_DEFAULT = "HOLA"
 
 DICT_DETECTOR_SIZE = {
     "MarCCD" : {
