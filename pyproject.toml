@@ -5,4 +5,4 @@
 
 
 [project.scripts]
-pyxscat = "qrange"
+qrange = "run_gui:run"

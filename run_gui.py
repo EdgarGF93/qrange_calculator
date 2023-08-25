@@ -271,8 +271,7 @@ class QCalcWindow(QMainWindow):
         self.setCentralWidget(self._guiwidget)
 
 
-
-if __name__ == "__main__":
+def run():
     app = QApplication(sys.argv)
     main_window = QCalcWindow()
 
